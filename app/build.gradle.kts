@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
 }
 
 android {
     namespace = "com.interactive.appgames"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.interactive.appgames"
@@ -49,6 +50,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,4 +58,22 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.navigation:navigation-common:2.7.6")
+    implementation("androidx.navigation:navigation-common-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
+    //Constraint
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    //Material | UI
+    implementation("androidx.compose.material:material:1.3.0")
+    implementation("androidx.compose.ui:ui:1.3.0")
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.0.0")
+    //ROOM KTX
+    implementation(libs.androidx.room)
+    kapt(libs.androidx.room.compiler)
+
+
 }

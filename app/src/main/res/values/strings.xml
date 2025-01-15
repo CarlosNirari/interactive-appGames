@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">appGames</string>
+    <string name="tab_home">Inicio</string>
+    <string name="tab_favorite">Favoritos</string>
+    <string name="home_page_title">Catalogo de Juegos</string>
+    <string name="empty_list">SIN REGISTROS POR CONSULTAR</string>
 </resources>

@@ -2,7 +2,7 @@
 
 Aplicación que permite la gestión de un catálogo de Video Juegos permitiendo realizar un CRUD
 
-## características
+## Características
 
 - Código escrito en Lenguaje [Kotlin](https://kotlinlang.org/)
 - Implementación principios SOLID.
