@@ -14,7 +14,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 2
-        versionName = "1.2.1"
+        versionName = "1.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -71,9 +71,16 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.3.0")
     //Coil
     implementation("io.coil-kt:coil-compose:2.0.0")
+    //Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     //ROOM KTX
     implementation(libs.androidx.room)
     kapt(libs.androidx.room.compiler)
+    //Dagger Hilt
+    implementation(libs.google.dagger.hilt)
+    kapt(libs.google.dagger.hilt.compiler)
 
 
 }
