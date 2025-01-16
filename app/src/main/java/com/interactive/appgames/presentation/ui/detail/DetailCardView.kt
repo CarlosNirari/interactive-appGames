@@ -146,7 +146,7 @@ fun DetailCardView(
                     painter = painterThumbnail,
                     contentDescription = null,
                     modifier = Modifier
-                        .height(90.dp)
+                        .size(width = 180.dp, height = 90.dp)
                 )
 
                 Column(

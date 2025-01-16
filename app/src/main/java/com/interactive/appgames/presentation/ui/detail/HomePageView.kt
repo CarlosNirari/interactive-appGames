@@ -1,8 +1,11 @@
 package com.interactive.appgames.presentation.ui.detail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,19 +19,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Icon
-import androidx.compose.material.TextField
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissState
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -44,25 +47,21 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.interactive.appgames.R
 import com.interactive.appgames.common.Constans
 import com.interactive.appgames.common.Constans.Companion.reachedBottom
-import com.interactive.appgames.data.database.GameEntity
 import com.interactive.appgames.domain.model.Game
+import com.interactive.appgames.presentation.ui.common.DefaultScreenView
 import com.interactive.appgames.presentation.ui.home.MainViewModel
+import kotlinx.coroutines.delay
 
 
 /**
@@ -77,35 +76,55 @@ fun HomePageView(
     mainViewModel: MainViewModel
 ) {
 
-    // Check if the user has scrolled to the bottom of the list
+
+    //rememberSaveable
+    val hasLoadedGames = rememberSaveable { mutableStateOf(false) }
+    var searchText by rememberSaveable { mutableStateOf("") }
+
 
     val snackbarHostState = remember { SnackbarHostState() }
     val openConfirmDialog = remember { mutableStateOf(false) }
+    val previousSearchText = remember { mutableStateOf("") }
 
     val showLoader by mainViewModel.showLoader.collectAsState()
+    val showLoaderLazy by mainViewModel.showLoaderLazy.collectAsState()
     val error by mainViewModel.error.collectAsState()
     val games by mainViewModel.games.collectAsState()
     val game = remember { mutableStateOf(Game(0, "", "", "", "", "", "", "", "", "", "")) }
-    var searchText by remember { mutableStateOf(TextFieldValue("")) }
 
     val lazyState = rememberLazyListState()
     val reachedBottom by remember { derivedStateOf { lazyState.reachedBottom() } }
 
-    LaunchedEffect(reachedBottom) {
-        if (reachedBottom && games.isNotEmpty()) {
-            mainViewModel.getGamesByRanges(games.lastOrNull()?.id ?: Constans.INT_DEFAULT)
+    if (!hasLoadedGames.value) {
+        LaunchedEffect(Unit) {
+            mainViewModel.getGamesByRanges(Constans.INT_DEFAULT)
+            hasLoadedGames.value = true // Marcamos que se ha ejecutado
         }
-    }
-
-    LaunchedEffect(Unit) {
-        mainViewModel.getGamesByRanges(Constans.INT_DEFAULT)
     }
 
     LaunchedEffect(error) {
         error?.let {
             snackbarHostState.showSnackbar(it)
-            mainViewModel.error.value = null
+            mainViewModel.restartError()//restauramos el estado del error desde el viewmodel
         }
+    }
+
+    LaunchedEffect(reachedBottom) {
+        if (reachedBottom) {
+            if (games.isNotEmpty() && searchText.isEmpty()) {
+                mainViewModel.getGamesByRanges(games.lastOrNull()?.id ?: Constans.INT_DEFAULT)
+            }
+        }
+    }
+
+    LaunchedEffect(searchText) {
+        if (searchText != previousSearchText.value) {
+            if (searchText.isNotEmpty()) {
+                mainViewModel.getGamesByFilter(searchText)
+            } else
+                mainViewModel.getGamesByRanges(Constans.INT_DEFAULT)
+        }
+        previousSearchText.value = searchText
     }
 
     Scaffold(
@@ -123,8 +142,8 @@ fun HomePageView(
                 title = {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                            /*.padding(horizontal = 16.dp),*/
+                            .fillMaxWidth()
+                            .padding(end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -157,11 +176,63 @@ fun HomePageView(
                     }
                 }
             )
-
         }
 
     ) { padding ->
-        LazyColumn(
+
+        if (showLoader or games.isEmpty()) {
+            DefaultScreenView(padding = padding, showLoader = showLoader)
+        } else {
+            LazyColumn(
+                state = lazyState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    items = games,
+                    key = { it.id }
+                ) { item ->
+                    SwipeToDeleteContainer(
+                        item = item,
+                        onDelete = {
+                            //Delete
+                            mainViewModel.delete(it)
+                        }
+                    ) { item ->
+                        DetailCardView(
+                            game = item,
+                            onDone = {
+                                openConfirmDialog.value = true
+                                game.value = item
+                            },
+                            onUpdate = onUpdate
+                        )
+                    }
+                }
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .heightIn(min = 20.dp), contentAlignment = Alignment.Center
+                    ) {
+                        if (showLoaderLazy) {
+                            CircularProgressIndicator()
+                        }
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        /*LazyColumn(
             state = lazyState,
             modifier = Modifier
                 .fillMaxSize()
@@ -169,19 +240,8 @@ fun HomePageView(
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            /*items(items = games,
+            items(items = games,
                 key = { it.id }) {
-                DetailCardView(
-                    game = it,
-                    onDone = {
-                        openConfirmDialog.value = true
-                        game.value = it
-                    },
-                    onUpdate = onUpdate
-                )
-            }*/
-
-            itemsIndexed(games) { _, it ->
                 DetailCardView(
                     game = it,
                     onDone = {
@@ -192,7 +252,6 @@ fun HomePageView(
                 )
             }
 
-            // Show loading indicator at the end of the list when loading more movies
             item {
                 Box(
                     modifier = Modifier
@@ -210,11 +269,84 @@ fun HomePageView(
                     )
                 }
             }
-
-        }
+        }*/
     }
     when {
         openConfirmDialog.value -> {
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun <T> SwipeToDeleteContainer(
+    item: T,
+    onDelete: (T) -> Unit,
+    animationDuration: Int = 500,
+    content: @Composable (T) -> Unit
+) {
+    var isRemoved by remember {
+        mutableStateOf(false)
+    }
+    val state = rememberDismissState(
+        confirmStateChange = { it ->
+            if (it == DismissValue.DismissedToStart) {
+                isRemoved = true
+                true
+            } else {
+                false
+            }
+        }
+    )
+
+    LaunchedEffect(key1 = isRemoved) {
+        if (isRemoved) {
+            delay(animationDuration.toLong())
+            onDelete(item)
+        }
+    }
+
+    AnimatedVisibility(
+        visible = !isRemoved,
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = animationDuration),
+            shrinkTowards = Alignment.Top
+        ) + fadeOut()
+    ) {
+        SwipeToDismiss(
+            state = state,
+            background = {
+                DeleteBackground(swipeDismissState = state)
+            },
+            dismissContent = { content(item) },
+            directions = setOf(DismissDirection.EndToStart)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun DeleteBackground(
+    swipeDismissState: DismissState
+) {
+    val color = if (swipeDismissState.dismissDirection == DismissDirection.EndToStart) {
+        Color.Red
+    } else Color.Transparent
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color)
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        androidx.compose.material.Icon(
+            imageVector = Icons.Filled.Delete,
+            contentDescription = null,
+            tint = Color.White
+        )
+    }
+}
+
+

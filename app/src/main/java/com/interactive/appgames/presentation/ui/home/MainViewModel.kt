@@ -40,9 +40,14 @@ class MainViewModel @Inject constructor(
     //duplicidad de declaracion, permite exponer al ui solo la variable inmutable, conservando en el view model la muteable
     //asegunrando que los datos no sean manipulados por la ui
 
-    val showLoader = MutableStateFlow(false)
+    val _showLoader = MutableStateFlow(false)
+    val showLoader: StateFlow<Boolean> = _showLoader
 
-    val error = MutableStateFlow<String?>(null)
+    val _showLoaderLazy = MutableStateFlow(false)
+    val showLoaderLazy: StateFlow<Boolean> = _showLoaderLazy
+
+    val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
     private val _games = MutableStateFlow<List<Game>>(emptyList())
     val games: StateFlow<List<Game>> = _games
@@ -75,17 +80,18 @@ class MainViewModel @Inject constructor(
                     } else {
                         //Simulacion de carga inmediata siempre y cuando sea diferente a 0
                         if (idLast != Constans.INT_DEFAULT) {
-                            showLoader.tryEmit(true)
+                            _showLoaderLazy.tryEmit(true)
                             delay(1000)
-                            showLoader.tryEmit(false)
+                            _showLoaderLazy.tryEmit(false)
+                            _games.value += result.data
+                        } else {
+                            _games.value = result.data
                         }
-                        _games.value += result.data
-
                     }
                 }
 
                 is Result.Error -> {
-                    error.value = result.exception.message
+                    _error.value = result.exception.message
                 }
             }
         }
@@ -93,6 +99,7 @@ class MainViewModel @Inject constructor(
 
     fun geAllGamesApi() {
         viewModelScope.launch(Dispatchers.IO) {
+            _showLoader.value = true
             val result = getAllGamesApiUseCase.invoke()
             when (result) {
                 is Result.Success -> {
@@ -100,9 +107,10 @@ class MainViewModel @Inject constructor(
                 }
 
                 is Result.Error -> {
-                    error.value = result.exception.message
+                    _error.value = result.exception.message
                 }
             }
+            _showLoader.value = false
         }
     }
 
@@ -115,7 +123,7 @@ class MainViewModel @Inject constructor(
                 }
 
                 is Result.Error -> {
-                    error.value = result.exception.message
+                    _error.value = result.exception.message
                 }
             }
         }
@@ -130,7 +138,7 @@ class MainViewModel @Inject constructor(
                 }
 
                 is Result.Error -> {
-                    error.value = result.exception.message
+                    _error.value = result.exception.message
                 }
             }
         }
@@ -145,7 +153,13 @@ class MainViewModel @Inject constructor(
     fun delete(game: Game) {
         viewModelScope.launch(Dispatchers.IO) {
             deleteGameUseCase.invoke(game)
+            val updateGames = _games.value.filter { it.id != game.id }
+            _games.value = updateGames
         }
+    }
+
+    fun restartError() {
+        _error.value = null;
     }
 
 }

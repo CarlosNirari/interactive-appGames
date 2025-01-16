@@ -24,7 +24,7 @@ fun HomePageNavigationView(mainViewModel: MainViewModel) {
     val navController = rememberNavController()
 
     //creacion de NavHost, seteando navController y estableciendo el tab inicial por medio de su titulo
-    NavHost(navController = navController,startDestination = Screen.HomeScreen.name) {
+    NavHost(navController = navController, startDestination = Screen.HomeScreen.name) {
         composable(route = Screen.HomeScreen.name) {
             //logica de la vista HomePage
             HomePageView(

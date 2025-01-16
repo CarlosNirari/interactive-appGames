@@ -29,5 +29,10 @@ class Constans {
                         lastVisibleItem.offset + lastVisibleItem.size <= viewportHeight)
             }
         }
+
+        fun LazyListState.reachedBottomok(): Boolean {
+            val totalItems = layoutInfo.totalItemsCount
+            return layoutInfo.visibleItemsInfo.lastOrNull()?.index == totalItems - 1
+        }
     }
 }
