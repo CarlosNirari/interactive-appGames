@@ -31,7 +31,7 @@ fun HomePageNavigationView(mainViewModel: MainViewModel) {
                 mainViewModel = mainViewModel,
                 onUpdate = { id ->
                     navController.navigate(
-                        route = "${Screen.HomeScreen.name} / $id"
+                        route = "${Screen.DetailScreen.name} / $id"
                     )
                 }
             )

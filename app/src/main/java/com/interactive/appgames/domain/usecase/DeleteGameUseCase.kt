@@ -12,7 +12,7 @@ import javax.inject.Inject
 class DeleteGameUseCase @Inject constructor(
     private val repository: GameRepository
 ) {
-    suspend fun invoke(game: Game) {
+    suspend operator fun invoke(game: Game) {
         repository.deleteGame(game)
     }
 }

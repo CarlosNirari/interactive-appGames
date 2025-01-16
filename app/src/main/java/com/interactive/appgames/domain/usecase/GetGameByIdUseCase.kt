@@ -14,7 +14,7 @@ import javax.inject.Inject
 class GetGameByIdUseCase @Inject constructor(
     private val repository: GameRepository
 ) {
-    suspend fun invoke(id: Int): Result<Flow<Game>> {
+    suspend operator fun invoke(id: Int): Result<Game> {
         return repository.getGameById(id)
     }
 }

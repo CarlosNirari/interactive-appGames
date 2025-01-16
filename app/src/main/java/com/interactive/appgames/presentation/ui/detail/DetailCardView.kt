@@ -55,6 +55,7 @@ fun DetailCardView(
         modifier = Modifier
             .padding(10.dp)
             .fillMaxWidth()
+            .height(180.dp)
             .clickable {
                 onUpdate(game.id)
             },
@@ -65,7 +66,6 @@ fun DetailCardView(
     ) {
         ConstraintLayout {
             val (mediumShade, minShade, genre) = createRefs()
-
             Box(
                 Modifier
                     .width(120.dp)

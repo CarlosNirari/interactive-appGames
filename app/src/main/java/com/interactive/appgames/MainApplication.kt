@@ -1,4 +1,4 @@
-package com.interactive.appgames.presentation
+package com.interactive.appgames
 
 import android.app.Application
 import android.content.Context
@@ -10,6 +10,7 @@ import dagger.hilt.android.HiltAndroidApp
  * Fecha de Creacion: 14/01/2025
  */
 @HiltAndroidApp
+
 class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()

@@ -14,7 +14,7 @@ import javax.inject.Inject
 class GetAllGamesUseCase @Inject constructor(
     private val repository: GameRepository
 ) {
-    suspend fun invoke(): Result<Flow<List<Game>>> {
+    suspend operator fun invoke(): Result<List<Game>> {
         return repository.getAllGames()
     }
 }

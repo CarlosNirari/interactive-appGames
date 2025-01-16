@@ -1,5 +1,6 @@
 package com.interactive.appgames.domain.usecase
 
+import com.interactive.appgames.common.Constans
 import com.interactive.appgames.common.Result
 import com.interactive.appgames.data.api.ApiService
 import com.interactive.appgames.domain.model.Game
@@ -22,9 +23,8 @@ class GetAllGamesApiUseCase @Inject constructor(
                     if (result.data.isNotEmpty()) {
                         repository.insertGames(result.data)
                     }
-                    Result.Success(result.data)
+                    repository.getGamesByRanges(Constans.INT_DEFAULT)
                 }
-
                 is Result.Error -> {
                     Result.Error(result.exception)
                 }

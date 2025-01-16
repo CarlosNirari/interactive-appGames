@@ -14,7 +14,7 @@ import javax.inject.Inject
 class GetGamesByFilterUseCase @Inject constructor(
     private val repository: GameRepository
 ) {
-    suspend fun invoke(query: String): Result<Flow<List<Game>>> {
+    suspend  operator fun invoke(query: String): Result<List<Game>> {
         return repository.getGamesByFilter(query)
     }
 }

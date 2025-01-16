@@ -21,19 +21,6 @@ import com.interactive.appgames.presentation.ui.tabs.TabView
 @Composable
 fun InitPageView(mainViewModel: MainViewModel) {
 
-    /*//Tabs
-    val homeTab = TabBarItem(
-        title = stringResource(id = R.string.tab_home),
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home
-    )
-    val favoriteTab = TabBarItem(
-        title = stringResource(id = R.string.tab_favorite),
-        selectedIcon = Icons.Filled.Favorite,
-        unselectedIcon = Icons.Outlined.FavoriteBorder,
-        favoriteAmount = null
-    )*/
-
     //lista de tabs que contendra el NavigationBarItem
     var tabBarItem = GetTabsView()
 

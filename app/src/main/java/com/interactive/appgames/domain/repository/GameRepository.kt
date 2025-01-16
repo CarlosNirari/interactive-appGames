@@ -13,8 +13,9 @@ interface GameRepository {
     suspend fun insertGames(games: List<Game>)
     suspend fun updateGame(game: Game)
     suspend fun deleteGame(game: Game)
-    suspend fun getAllGames(): Result<Flow<List<Game>>>
-    suspend fun getGamesByFilter(query: String): Result<Flow<List<Game>>>
-    suspend fun getGameById(id: Int): Result<Flow<Game>>
+    suspend fun getAllGames(): Result<List<Game>>
+    suspend fun getGamesByRanges(idLast:Int): Result<List<Game>>
+    suspend fun getGamesByFilter(query: String): Result<List<Game>>
+    suspend fun getGameById(id: Int): Result<Game>
     suspend fun getAllGameApi(): Result<List<Game>>
 }

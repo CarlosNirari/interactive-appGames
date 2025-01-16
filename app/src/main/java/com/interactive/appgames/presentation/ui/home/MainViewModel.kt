@@ -10,8 +10,11 @@ import com.interactive.appgames.domain.usecase.GetAllGamesApiUseCase
 import com.interactive.appgames.domain.usecase.GetAllGamesUseCase
 import com.interactive.appgames.domain.usecase.GetGameByIdUseCase
 import com.interactive.appgames.domain.usecase.GetGamesByFilterUseCase
+import com.interactive.appgames.domain.usecase.GetGamesByRangeUseCase
 import com.interactive.appgames.domain.usecase.UpdateGameUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,9 +25,11 @@ import javax.inject.Inject
  * Proyecto: appGames
  * Fecha de Creacion: 14/01/2025
  */
+@HiltViewModel
 class MainViewModel @Inject constructor(
     private val getAllGamesApiUseCase: GetAllGamesApiUseCase,
     private val getAllGamesUseCase: GetAllGamesUseCase,
+    private val getGamesByRangeUseCase: GetGamesByRangeUseCase,
     private val getGamesByFilterUseCase: GetGamesByFilterUseCase,
     private val getGameByIdUseCase: GetGameByIdUseCase,
     private val updateGameUseCase: UpdateGameUseCase,
@@ -34,6 +39,8 @@ class MainViewModel @Inject constructor(
 
     //duplicidad de declaracion, permite exponer al ui solo la variable inmutable, conservando en el view model la muteable
     //asegunrando que los datos no sean manipulados por la ui
+
+    val showLoader = MutableStateFlow(false)
 
     val error = MutableStateFlow<String?>(null)
 
@@ -58,20 +65,22 @@ class MainViewModel @Inject constructor(
     val game: StateFlow<Game> = _game
 
 
-    fun getAllGames() {
+    fun getGamesByRanges(idLast: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = getAllGamesUseCase.invoke()
+            val result = getGamesByRangeUseCase.invoke(idLast)
             when (result) {
                 is Result.Success -> {
-
-                    result.data.collect {
-                        if (it.isEmpty()) {
-                            geAllGamesApi()
-                        } else {
-                            result.data.collect {
-                                _games.value = it
-                            }
+                    if (result.data.isEmpty()) {
+                        geAllGamesApi()
+                    } else {
+                        //Simulacion de carga inmediata siempre y cuando sea diferente a 0
+                        if (idLast != Constans.INT_DEFAULT) {
+                            showLoader.tryEmit(true)
+                            delay(1000)
+                            showLoader.tryEmit(false)
                         }
+                        _games.value += result.data
+
                     }
                 }
 
@@ -102,16 +111,7 @@ class MainViewModel @Inject constructor(
             val result = getGamesByFilterUseCase.invoke(query)
             when (result) {
                 is Result.Success -> {
-
-                    result.data.collect {
-                        if (it.isEmpty()) {
-                            geAllGamesApi()
-                        } else {
-                            result.data.collect {
-                                _games.value = it
-                            }
-                        }
-                    }
+                    _games.value = result.data
                 }
 
                 is Result.Error -> {
@@ -126,10 +126,7 @@ class MainViewModel @Inject constructor(
             val result = getGameByIdUseCase.invoke(id)
             when (result) {
                 is Result.Success -> {
-
-                    result.data.collect {
-                        _game.value = it
-                    }
+                    _game.value = result.data
                 }
 
                 is Result.Error -> {

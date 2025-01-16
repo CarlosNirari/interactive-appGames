@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.interactive.appgames.data.model.GameDTO
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -26,11 +25,14 @@ interface GameDao {
     suspend fun deleteGame(gameEntity: GameEntity)
 
     @Query("SELECT * FROM game_table ORDER BY id DESC")
-    suspend fun getAllGames(): Flow<List<GameEntity>>
+    suspend fun getAllGames(): List<GameEntity>
 
-    @Query("SELECT * FROM game_table WHERE (title like '%'||:query ||'%' OR genre like '%'||:query ||'%'OR id like '%'||:query ||'%')  ORDER BY id DESC")
-    suspend fun getGamesByFilter(query: String): Flow<List<GameEntity>>
+    @Query("SELECT * FROM game_table WHERE id>:idLast ORDER BY id ASC  LIMIT 10 ")
+    suspend fun getGamesByRanges(idLast: Int): List<GameEntity>
+
+    @Query("SELECT * FROM game_table WHERE (title like '%'|| :query ||'%' OR genre like '%'|| :query ||'%'OR id like '%'|| :query ||'%')  ORDER BY id DESC")
+    suspend fun getGamesByFilter(query: String): List<GameEntity>
 
     @Query("SELECT * FROM game_table where id=:id")
-    suspend fun getGameById(id:Int): Flow<GameEntity>
+    suspend fun getGameById(id: Int): GameEntity
 }

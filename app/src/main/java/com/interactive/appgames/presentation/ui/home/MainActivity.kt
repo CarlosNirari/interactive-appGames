@@ -10,7 +10,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.interactive.appgames.presentation.ui.navigation.InitPageView
 import com.interactive.appgames.ui.theme.AppGamesTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     //ViewModel

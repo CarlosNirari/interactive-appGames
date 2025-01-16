@@ -1,6 +1,5 @@
 package com.interactive.appgames.data.api
 
-import com.interactive.appgames.data.database.GameEntity
 import com.interactive.appgames.data.model.GameDTO
 import retrofit2.Response
 import retrofit2.http.GET
@@ -11,6 +10,6 @@ import retrofit2.http.GET
  * Fecha de Creacion: 15/01/2025
  */
 interface ApiClient {
-    @GET("/.json")
+    @GET("/api/games")
     suspend fun getAllGameApi(): Response<List<GameDTO>>
 }

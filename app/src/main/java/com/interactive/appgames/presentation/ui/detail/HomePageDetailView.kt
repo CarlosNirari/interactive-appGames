@@ -38,8 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberImagePainter
+import com.interactive.appgames.MainApplication.Companion.CONTEXT
 import com.interactive.appgames.R
-import com.interactive.appgames.presentation.MainApplication.Companion.CONTEXT
+/*import com.interactive.appgames.MainApplication.Companion.CONTEXT*/
 import com.interactive.appgames.presentation.ui.home.MainViewModel
 
 /**
@@ -163,7 +164,7 @@ fun HomePageDetailView(
                 ) {
 
                     Text(
-                        text = "Anarchy Online",
+                        text = if (isPreview) "Anarchy Online" else game.title,
                         fontSize = 38.sp,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
@@ -475,7 +476,7 @@ fun HomePageDetailView(
                         }
                     }
 
-                    Text(
+                    /*Text(
                         text = "Gallery:",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
@@ -514,7 +515,7 @@ fun HomePageDetailView(
                                     .padding(top = 15.dp, bottom = 15.dp, end = 8.dp)
                             )
                         }
-                    }
+                    }*/
                 }
             }
         }

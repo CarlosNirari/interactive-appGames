@@ -3,18 +3,20 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.com.google.devtools.ksp)
+    alias(libs.plugins.google.dagger.hilt)
 }
 
 android {
     namespace = "com.interactive.appgames"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.interactive.appgames"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 34
         versionCode = 2
-        versionName = "1.3.1"
+        versionName = "1.4.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -71,16 +73,25 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.3.0")
     //Coil
     implementation("io.coil-kt:coil-compose:2.0.0")
+    //Glide
+    implementation ("com.github.bumptech.glide:glide:4.15.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.0")
     //Retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    /*Corrutinas*/
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
     //ROOM KTX
     implementation(libs.androidx.room)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     //Dagger Hilt
     implementation(libs.google.dagger.hilt)
     kapt(libs.google.dagger.hilt.compiler)
+}
 
-
+kapt {
+    correctErrorTypes = true
 }

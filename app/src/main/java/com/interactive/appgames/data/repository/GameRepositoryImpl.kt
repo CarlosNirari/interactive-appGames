@@ -33,38 +33,54 @@ class GameRepositoryImpl @Inject constructor(
         gameDao.deleteGame(game.toEntity())
     }
 
-    override suspend fun getAllGames(): Result<Flow<List<Game>>> {
+    override suspend fun getAllGames(): Result<List<Game>> {
         return try {
             //mapeo para conversion de Entidad DAO a Entidad de Dominio sin perder la implementacion de flow
-            Result.Success(gameDao.getAllGames().map { entities ->
-                entities.map {
-                    it.toDomain()
-                }
-            })
+            Result.Success(gameDao.getAllGames().map { it.toDomain() })
         } catch (e: Exception) {
             Result.Error(e)
         }
     }
 
-    override suspend fun getGamesByFilter(query: String): Result<Flow<List<Game>>> {
+    override suspend fun getGamesByRanges(idLast: Int): Result<List<Game>> {
         return try {
             //mapeo para conversion de Entidad DAO a Entidad de Dominio sin perder la implementacion de flow
-            Result.Success(gameDao.getGamesByFilter(query).map { entities ->
-                entities.map {
-                    it.toDomain()
-                }
-            })
+            Result.Success(gameDao.getGamesByRanges(idLast).map { it.toDomain() })
         } catch (e: Exception) {
             Result.Error(e)
         }
     }
 
-    override suspend fun getGameById(id: Int): Result<Flow<Game>> {
+    override suspend fun getGamesByFilter(query: String): Result<List<Game>> {
         return try {
             //mapeo para conversion de Entidad DAO a Entidad de Dominio sin perder la implementacion de flow
-            Result.Success(gameDao.getGameById(id).map { it ->
+            Result.Success(gameDao.getGamesByFilter(query).map {
                 it.toDomain()
             })
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override suspend fun getGameById(id: Int): Result<Game> {
+        return try {
+            //mapeo para conversion de Entidad DAO a Entidad de Dominio sin perder la implementacion de flow
+            val game = gameDao.getGameById(id)
+            Result.Success(
+                Game(
+                    id = game.id,
+                    title = game.title,
+                    thumbnail = game.thumbnail,
+                    short_description = game.short_description,
+                    game_url = game.game_url,
+                    genre = game.genre,
+                    platform = game.platform,
+                    publisher = game.publisher,
+                    developer = game.developer,
+                    release_date = game.release_date,
+                    freetogame_profile_url = game.freetogame_profile_url
+                )
+            )
         } catch (e: Exception) {
             Result.Error(e)
         }

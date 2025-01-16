@@ -14,26 +14,26 @@ import com.interactive.appgames.domain.model.Game
 @Entity(tableName = "game_table")
 data class GameEntity(
     @PrimaryKey
-    val id: Int = 0,
-    @ColumnInfo("title")
+    val id: Int ,
+    @ColumnInfo(name ="title")
     val title: String,
-    @ColumnInfo("thumbnail")
+    @ColumnInfo(name ="thumbnail")
     val thumbnail: String,
-    @ColumnInfo("short_description")
+    @ColumnInfo(name ="short_description")
     val short_description: String,
-    @ColumnInfo("game_url")
+    @ColumnInfo(name ="game_url")
     val game_url: String,
-    @ColumnInfo("genre")
+    @ColumnInfo(name ="genre")
     val genre: String,
-    @ColumnInfo("platform")
+    @ColumnInfo(name ="platform")
     val platform: String,
-    @ColumnInfo("publisher")
+    @ColumnInfo(name ="publisher")
     val publisher: String,
-    @ColumnInfo("developer")
+    @ColumnInfo(name ="developer")
     val developer: String,
-    @ColumnInfo("release_date")
+    @ColumnInfo(name ="release_date")
     val release_date: String,
-    @ColumnInfo("freetogame_profile_url")
+    @ColumnInfo(name ="freetogame_profile_url")
     val freetogame_profile_url: String
 )
 

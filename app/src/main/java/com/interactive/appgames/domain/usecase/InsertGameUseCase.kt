@@ -12,7 +12,7 @@ import javax.inject.Inject
 class InsertGameUseCase @Inject constructor(
     private val repository: GameRepository
 ) {
-    suspend fun invoke(games: List<Game>) {
+    suspend operator fun invoke(games: List<Game>) {
         repository.insertGames(games)
     }
 }
