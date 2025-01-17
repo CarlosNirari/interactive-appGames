@@ -1,9 +1,5 @@
 package com.interactive.appgames.presentation.ui.detail
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,14 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DismissDirection
-import androidx.compose.material.DismissState
-import androidx.compose.material.DismissValue
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -55,15 +43,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.interactive.appgames.R
 import com.interactive.appgames.common.Constans
-import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.presentation.ui.common.DefaultScreenView
 import com.interactive.appgames.presentation.ui.common.SnackBar
 import com.interactive.appgames.presentation.ui.common.reachedBottom
 import com.interactive.appgames.presentation.ui.home.MainViewModel
-import kotlinx.coroutines.delay
 
 
 /**
@@ -78,33 +65,43 @@ fun HomePageView(
     mainViewModel: MainViewModel
 ) {
 
+    //A continuacion se describen las variables necesarias para el manejo de estados de cada componente
 
-    //rememberSaveable
+    //rememberSaveable, variables necesarias para mantener el estado de dos procesos viatales para elcorrecto funcionamiento de la aplicacion, loading bottom lazy y input de busqueda
     val hasLoadedGames = rememberSaveable { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
-
-    val snackbarHostState = remember { SnackbarHostState() }
-    val openConfirmDialog = remember { mutableStateOf(false) }
-    val previousSearchText = remember { mutableStateOf("") }
-
+    //Variables Viewmodel
+    //Variable para el manejo de error de red
+    val isErrorNetwork by mainViewModel.isErrorNetwork.collectAsState()
+    //Variable que indica que existe un procesos de carga general en backgroud, ejemplo, consumo de una API
     val showLoader by mainViewModel.showLoader.collectAsState()
+    //Variable que permite determinar si la consulta por paginacion esta activa
     val showLoaderLazy by mainViewModel.showLoaderLazy.collectAsState()
+    //Variable para cachar errores del viewmodel, permitiendo subir a esta capa
     val error by mainViewModel.error.collectAsState()
+    //Variable para almacenar el resultado de la consulta que desecadena o no el consumo de la api segun sea el caso o la consulta local
     val games by mainViewModel.games.collectAsState()
-    val game = remember { mutableStateOf(Game(0, "", "", "", "", "", "", "", "", "", "")) }
 
-    val lazyState = rememberLazyListState()
-    val reachedBottom by remember { derivedStateOf { lazyState.reachedBottom() } }
+
+    //Variable para el manejo del estado del snarkbar llamado por medio de una funcion no composable
+    val snackbarHostState = remember { SnackbarHostState() }
+    //Variable para poder implementar el snack bar desde una funcion
     val scope = rememberCoroutineScope()
+    //Variable para validar si existe alguna modificacion en el input search, si el texto es diferente al actual indica modificacion
+    val previousSearchText = remember { mutableStateOf("") }
+    //Variable para el manejo del estado de LazyColumn
+    val lazyState = rememberLazyListState()
+    //Variable para el control de estado de la variable previamente creada, funcion extendida.
+    val reachedBottom by remember { derivedStateOf { lazyState.reachedBottom() } }
 
+    //LaunchedEffect's
     if (!hasLoadedGames.value) {
         LaunchedEffect(Unit) {
             mainViewModel.getGamesByRanges(Constans.INT_DEFAULT)
             hasLoadedGames.value = true // Marcamos que se ha ejecutado
         }
     }
-
     LaunchedEffect(error) {
         error?.let {
             snackbarHostState.showSnackbar(it)
@@ -130,6 +127,7 @@ fun HomePageView(
         previousSearchText.value = searchText
     }
 
+    //Scaffold, permitiendo la estructura de las vistas que se acoplaran para la inicializacion de componentes como toolbar, lazyColumn y box de paginacion
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
@@ -142,17 +140,18 @@ fun HomePageView(
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onSecondary
                 ),
+                //Peresonalizacion del toolbar
                 title = {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(end = 16.dp),
+                            .padding(end = 16.dp, bottom = 5.dp, top = 5.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
                         androidx.compose.material3.TextField(
                             value = searchText, onValueChange = { searchText = it },
-                            label = { Text(text = "Searching for ....") },
+                            label = { Text(text = stringResource(R.string.searching_for)) },
                             trailingIcon = {
                                 Image(
                                     painter = painterResource(id = R.drawable.search_icon),
@@ -167,14 +166,13 @@ fun HomePageView(
                                 /*backgroundColor = Color.White,*/
                                 focusedBorderColor = Color.Transparent,
                                 unfocusedBorderColor = Color.Transparent,
-                                /*textColor = Color(android.graphics.Color.parseColor("#5e5e5e")),*/
-                                unfocusedLabelColor = Color(android.graphics.Color.parseColor("#5e5e5e"))
+                                unfocusedLabelColor = Color(0xFF5E3BEE)
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                /*.padding(top = 24.dp, end = 24.dp, start = 24.dp)*/
+                                .padding(top = 5.dp, bottom = 5.dp)
                                 .shadow(3.dp, shape = RoundedCornerShape(50.dp))
-                                .background(Color.White, CircleShape)
+                                .background( Color(0x4D000000), CircleShape)
                         )
                     }
                 }
@@ -184,13 +182,21 @@ fun HomePageView(
     ) { padding ->
 
         if (showLoader or games.isEmpty()) {
-            DefaultScreenView(padding = padding, showLoader = showLoader)
+            DefaultScreenView(
+                padding = padding,
+                isShowLoader = showLoader,
+                isErrorNetwork = isErrorNetwork,
+                onRetryClick = {
+                    mainViewModel.getGamesByRanges(Constans.INT_DEFAULT)
+                    mainViewModel.restartErrorNetWork()
+                })
         } else {
             LazyColumn(
                 state = lazyState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
+                    .padding(padding)
+                    .background(Color(0x4D000000)),
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -198,30 +204,20 @@ fun HomePageView(
                     items = games,
                     key = { it.id }
                 ) { item ->
-                    SwipeToDeleteContainer(
-                        item = item,
-                        itemKey = item.id,
-                        onDelete = {
-                            //Delete
-                            mainViewModel.delete(it)
-                            /*SnackBar(
+                    DetailCardView(
+                        item,
+                        onUpdate = onUpdate,
+                        onDeleteClick = {
+                            SnackBar(
                                 scope = scope,
                                 snackbarHostState = snackbarHostState,
-                                msg = "\"${it.id}\"",
+                                menssage = "\"${item.title}\"",
                                 actionLabel = "Undo",
                                 onAction = { mainViewModel.undoDelete() }
-                            )*/
-                        }
-                    ) { item ->
-                        DetailCardView(
-                            game = item,
-                            onDone = {
-                                openConfirmDialog.value = true
-                                game.value = item
-                            },
-                            onUpdate = onUpdate
-                        )
-                    }
+                            )
+                            mainViewModel.delete(item)
+                        },
+                    )
                 }
                 item {
                     Box(
@@ -242,123 +238,10 @@ fun HomePageView(
                 }
             }
         }
-
-        /*LazyColumn(
-            state = lazyState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(items = games,
-                key = { it.id }) {
-                DetailCardView(
-                    game = it,
-                    onDone = {
-                        openConfirmDialog.value = true
-                        game.value = it
-                    },
-                    onUpdate = onUpdate
-                )
-            }
-
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .heightIn(min = 20.dp), contentAlignment = Alignment.Center
-                ) {
-                    if (showLoader) {
-                        CircularProgressIndicator()
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp)
-                    )
-                }
-            }
-        }*/
-    }
-    when {
-        openConfirmDialog.value -> {
-        }
     }
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun <T> SwipeToDeleteContainer(
-    item: T,
-    itemKey: Int,
-    onDelete: (T) -> Unit,
-    animationDuration: Int = 500,
-    content: @Composable (T) -> Unit
-) {
-    var isRemoved by remember(itemKey) {
-        mutableStateOf(false)
-    }
-    val state = rememberDismissState(
-        confirmStateChange = { it ->
-            if (it == DismissValue.DismissedToStart) {
-                isRemoved = true
-                true
-            } else {
-                false
-            }
-        }
-    )
 
-    LaunchedEffect(key1 = isRemoved) {
-        if (isRemoved) {
-            delay(animationDuration.toLong())
-            onDelete(item)
-        }
-    }
-
-    AnimatedVisibility(
-        visible = !isRemoved,
-        exit = shrinkVertically(
-            animationSpec = tween(durationMillis = animationDuration),
-            shrinkTowards = Alignment.Top
-        ) + fadeOut()
-    ) {
-        SwipeToDismiss(
-            state = state,
-            background = {
-                DeleteBackground(swipeDismissState = state)
-            },
-            dismissContent = { content(item) },
-            directions = setOf(DismissDirection.EndToStart)
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun DeleteBackground(
-    swipeDismissState: DismissState
-) {
-    val color = if (swipeDismissState.dismissDirection == DismissDirection.EndToStart) {
-        Color.Red
-    } else Color.Transparent
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        androidx.compose.material.Icon(
-            imageVector = Icons.Filled.Delete,
-            contentDescription = null,
-            tint = Color.White
-        )
-    }
-}
 
 

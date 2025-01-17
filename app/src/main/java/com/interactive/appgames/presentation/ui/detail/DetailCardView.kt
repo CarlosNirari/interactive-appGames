@@ -2,113 +2,92 @@ package com.interactive.appgames.presentation.ui.detail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberImagePainter
 import com.interactive.appgames.R
-import com.interactive.appgames.data.database.GameEntity
+import com.interactive.appgames.common.Constans
 import com.interactive.appgames.domain.model.Game
 
 /**
  * Creado por: charssanti
  * Proyecto: appGames
- * Fecha de Creacion: 14/01/2025
+ * Fecha de Creacion: 16/01/2025
  */
 
-/*@Preview*/
 @Composable
 fun DetailCardView(
     game: Game,
-    onDone: () -> Unit,
     onUpdate: (id: Int) -> Unit,
+    onDeleteClick: () -> Unit,
     isPreview: Boolean = false
+
 ) {
-    Card(
+    //Contenedor principal con estilo de cardview
+    Box(
         modifier = Modifier
-            .padding(10.dp)
             .fillMaxWidth()
-            .height(180.dp)
-            .clickable {
-                onUpdate(game.id)
-            },
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(android.graphics.Color.parseColor("#eeb93b"))
-        ),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .background(color = Color(0xFF1C1C1C), shape = RoundedCornerShape(12.dp))
     ) {
-        ConstraintLayout {
-            val (mediumShade, minShade, genre) = createRefs()
-            Box(
-                Modifier
-                    .width(120.dp)
-                    .height(120.dp)
-                    .constrainAs(mediumShade) {
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                    }
-                    .background(
-                        color = Color(android.graphics.Color.parseColor("#9881f4")),
-                        shape = RoundedCornerShape(bottomStart = 120.dp)
-                    )
-            )
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
 
-            Box(
-                Modifier
-                    .width(100.dp)
-                    .height(100.dp)
-                    .constrainAs(minShade) {
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                    }
-                    .background(
-                        color = Color(android.graphics.Color.parseColor("#ab98f6")),
-                        shape = RoundedCornerShape(bottomStart = 100.dp)
-                    )
-            )
-
+            //Contenedor para imagen del item
             Box(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .padding(top = 5.dp, start = 5.dp, end = 5.dp, bottom = 5.dp)
-                    .constrainAs(genre) {
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                    }
-                    .background(
-                        color = Color(android.graphics.Color.parseColor("#f4d281")),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-
+                    .fillMaxWidth()
+                    .aspectRatio(16 / 9f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(color = Color(0xFF2E2E2E))
             ) {
+
+                val painterThumbnail = if (isPreview) {
+                    painterResource(id = R.drawable.thumbnail)
+                } else {
+                    rememberImagePainter(game.thumbnail)
+                }
+
+                Image(
+                    painter = painterThumbnail,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+
+                //Establecemos un contenedor para el genero del video juego
                 Row(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .background(Color(0xFFEEB83B), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
                 ) {
@@ -116,82 +95,96 @@ fun DetailCardView(
                         modifier = Modifier.size(18.dp),
                         imageVector = Icons.Filled.Info,
                         contentDescription = null,
-                        tint = Color(android.graphics.Color.parseColor("#9881f4"))
+                        tint = Color(0xFF5E3BEE)
                     )
                     Text(
-                        text = if (isPreview) "MMORPG" else game.genre,
-                        color = Color(android.graphics.Color.parseColor("#9881f4")),
-                        style = TextStyle(
-                            fontSize = 8.sp, fontWeight = FontWeight.Bold
-                        )
+                        text = game.genre,
+                        color = Color(0xFF5E3BEE),
+                        fontSize = 12.sp
                     )
                 }
+
             }
 
-            val painterThumbnail = if (isPreview) {
-                painterResource(id = R.drawable.thumbnail)
-            } else {
-                rememberImagePainter(game.thumbnail)
-            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+
+            //Detalle del item, titulo, descripcion y plataforma
+            Text(
+                text = game.title,
+                color = Color(0xFFFFFFFF),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = game.short_description,
+                color = Color(0xFF9E9E9E),
+                fontSize = 14.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
 
-                Image(
-                    painter = painterThumbnail,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(width = 180.dp, height = 90.dp)
-                )
-
-                Column(
-                    modifier = Modifier
-                        /*.height(100.dp)*/
-                        .padding(start = 14.dp)
-                        .weight(0.7f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start,
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    Text(
-                        text = if (isPreview) "2003-06-01" else game.release_date,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(android.graphics.Color.parseColor("#5e3bee"))
-                    )
+                    //Se establece condicon para determinar a que plataforma pertenece el video juego de ser ambas se mostraran dos iconos
+                    if (game.platform == Constans.WINDOWS || game.platform == Constans.WINDOWS_AND_WEB) {
+                        Image(
+                            painter = painterResource(id = R.drawable.windows_icon),
+                            contentDescription = null,
+                            Modifier.padding(end = 5.dp)
+                        )
+                    }
 
-                    Text(
-                        text = if (isPreview) "Anarchy Online" else game.title,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        color = Color(android.graphics.Color.parseColor("#5e3bee"))
-                    )
+                    if (game.platform == Constans.WEB_BROWSER || game.platform == Constans.WINDOWS_AND_WEB) {
+                        Image(
+                            painter = painterResource(id = R.drawable.browsers_icon),
+                            contentDescription = null,
+                            Modifier.padding(end = 5.dp)
+                        )
+                    }
 
-                    Spacer(Modifier.height(5.dp))
-
-                    Text(
-                        text = "About:",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        color = Color(android.graphics.Color.parseColor("#5e3bee"))
-                    )
-
-                    Text(
-                        text = if (isPreview) "A free to play Sci-Fi MMO that has withstood the test of time." else game.short_description,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Thin,
-                        maxLines = 3,
-                        color = Color(android.graphics.Color.parseColor("#5e3bee"))
-                    )
+                    //Area de botonos para operaciones como, ver detalle y eliminar
+                    //Anterior mente se tenia un swipe right pero se quita debido a lo complejo que se volvio
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = { onUpdate(game.id) },
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.view_details),
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                        }
+                        Button(
+                            onClick = onDeleteClick
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.delete),
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
                 }
+
             }
         }
     }
 }
+

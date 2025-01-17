@@ -9,9 +9,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/control_game_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/control_game_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppGames"
         tools:targetApi="31">
@@ -19,6 +19,7 @@
             android:name=".presentation.ui.home.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppGames">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

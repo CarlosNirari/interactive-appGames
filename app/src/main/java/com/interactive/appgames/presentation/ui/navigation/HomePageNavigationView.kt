@@ -23,7 +23,7 @@ import com.interactive.appgames.presentation.ui.detail.HomePageView
 fun HomePageNavigationView(mainViewModel: MainViewModel) {
     val navController = rememberNavController()
 
-    //creacion de NavHost, seteando navController y estableciendo el tab inicial por medio de su titulo
+    //Creacion de NavHost, seteando navController y estableciendo el tab inicial por medio de su titulo
     NavHost(navController = navController, startDestination = Screen.HomeScreen.name) {
         composable(route = Screen.HomeScreen.name) {
             //logica de la vista HomePage
@@ -56,11 +56,9 @@ fun HomePageNavigationView(mainViewModel: MainViewModel) {
             }
         ) { navBackStackEntry ->
             navBackStackEntry.arguments?.getInt("id").let { id ->
-                HomePageDetailView(
-                    id = id!!,
+                HomePageDetailView(id = id!!,
                     mainViewModel = mainViewModel,
-                    onBack = { navController.popBackStack() }
-                )
+                    onBack = { navController.popBackStack() })
             }
         }
 

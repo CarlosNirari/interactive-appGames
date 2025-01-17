@@ -9,6 +9,8 @@ import com.interactive.appgames.data.database.toEntity
 import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.domain.model.toDomain
 import com.interactive.appgames.domain.repository.GameRepository
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -121,8 +123,12 @@ class GameRepositoryImpl @Inject constructor(
             Result.Success(apiService.getAllGameApi().map {
                 it.toDomain()
             })
+        } catch (e: IOException) {
+            Result.Error(Exception("No connection"))
+        } catch (e: HttpException) {
+            Result.Error(Exception("HTTP error: ${e.message()}"))
         } catch (e: Exception) {
-            Result.Error(e)
+            Result.Error(Exception("An unexpected error occurred"))
         }
     }
 }

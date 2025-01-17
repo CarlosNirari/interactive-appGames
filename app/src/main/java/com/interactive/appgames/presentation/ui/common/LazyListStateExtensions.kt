@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyListState
  * Creado por: charssanti
  * Proyecto: appGames
  * Fecha de Creacion: 16/01/2025
+ * Creditos: https://canopas.com/how-to-create-easy-pagination-in-jetpack-compose-d7e4bb3fc1c6
  */
 
 fun LazyListState.reachedBottom(): Boolean {

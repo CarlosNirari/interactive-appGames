@@ -1,7 +1,24 @@
 <resources>
     <string name="app_name">appGames</string>
-    <string name="tab_home">Inicio</string>
-    <string name="tab_favorite">Favoritos</string>
-    <string name="home_page_title">Catalogo de Juegos</string>
-    <string name="empty_list">SIN REGISTROS POR CONSULTAR</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_manual">Manual</string>
+    <string name="view_details">ViewDetails</string>
+    <string name="clear">Clear</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
+    <string name="back">Back</string>
+    <string name="configuration">Configuration</string>
+    <string name="about">Aboutme</string>
+    <string name="gallery">Gallery</string>
+    <string name="view_free_game">View on FreeToGame</string>
+    <string name="visit_web_site">Visit on FreeToGame</string>
+    <string name="searching_for">Searching for ....</string>
+    <string name="title_popup">Edit Game</string>
+    <string name="menssage_loading">Loading...</string>
+    <string name="menssage_empty_result">No results found</string>
+    <string name="menssage_reintent_connect">Try another search or check your connection.</string>
+    <string name="menssage_ok">The information has been updated correctly.</string>
+
 </resources>

@@ -41,7 +41,8 @@ class MainViewModel @Inject constructor(
     //duplicidad de declaracion, permite exponer al ui solo la variable inmutable, conservando en el view model la muteable
     //asegunrando que los datos no sean manipulados por la ui
 
-    val TAG: String = MainViewModel::class.simpleName.toString()
+    val _isErrorNetwork = MutableStateFlow(false)
+    val isErrorNetwork: StateFlow<Boolean> = _isErrorNetwork
 
     val _showLoader = MutableStateFlow(false)
     val showLoader: StateFlow<Boolean> = _showLoader
@@ -113,6 +114,7 @@ class MainViewModel @Inject constructor(
 
                 is Result.Error -> {
                     _error.value = result.exception.message
+                    _isErrorNetwork.value = true
                 }
             }
             _showLoader.value = false
@@ -157,6 +159,7 @@ class MainViewModel @Inject constructor(
                     _games.value = _games.value.map {
                         if (it.id == game.id) game else it
                     }
+                    _game.value = game
                 }
 
                 is Result.Error -> {
@@ -205,6 +208,10 @@ class MainViewModel @Inject constructor(
 
     fun restartError() {
         _error.value = null;
+    }
+
+    fun restartErrorNetWork() {
+        _isErrorNetwork.value = false
     }
 
 }

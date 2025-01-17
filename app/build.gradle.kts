@@ -54,10 +54,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
     testImplementation(libs.junit)
-    //Mock o Mokito
-    testImplementation("io.mockk:mockk:1.12.2")
-    //CorrerTesting
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,33 +62,34 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
-
+    //Mock o Mokito
+    testImplementation(libs.mockk)
+    //CorrerTesting
+    testImplementation(libs.androidx.core.testing)
     //Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.6")
-    implementation("androidx.navigation:navigation-common:2.7.6")
-    implementation("androidx.navigation:navigation-common-ktx:2.7.6")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.common)
+    implementation(libs.androidx.navigation.common.ktx)
+    implementation(libs.androidx.navigation.runtime.ktx.v276)
     //Constraint
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation(libs.androidx.constraintlayout.compose)
     //Material | UI
-    implementation("androidx.compose.material:material:1.3.0")
-    implementation("androidx.compose.ui:ui:1.3.0")
+    implementation(libs.androidx.material)
+    implementation(libs.ui)
     //Coil
-    implementation("io.coil-kt:coil-compose:2.0.0")
+    implementation(libs.coil.compose)
     //Glide
-    implementation ("com.github.bumptech.glide:glide:4.15.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.0")
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
     //Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
     /*Corrutinas*/
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     /*FoundFondation*/
-    implementation ("androidx.compose.foundation:foundation:1.5.0")
-
+    implementation (libs.androidx.foundation)
     //ROOM KTX
     implementation(libs.androidx.room)
     ksp(libs.androidx.room.compiler)

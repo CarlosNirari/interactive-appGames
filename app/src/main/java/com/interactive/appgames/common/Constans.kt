@@ -17,7 +17,7 @@ class Constans {
         val ERROR_TRANSACCION_DB = "Database error"
         val UNKONOW_ERROR_API = "Unkonow error from API"
         val UNKONOW_ERROR = "Unkonow error"
-        val TRANSACCION_EMPTY_RESULT="Record without data"
+        val TRANSACCION_EMPTY_RESULT = "Record without data"
 
         //No mover, dependencias requeridas para Mockk
         val OBJECT_GAME_UNIT_TEST = Game(
@@ -35,5 +35,9 @@ class Constans {
         )
 
         val LIST_OBJECT_GAME_UNIT_TEST = listOf(OBJECT_GAME_UNIT_TEST)
+
+        val WINDOWS = "PC (Windows)"
+        val WINDOWS_AND_WEB = "PC (Windows), Web Browser"
+        val WEB_BROWSER = "Web Browser"
     }
 }
