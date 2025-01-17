@@ -3,7 +3,6 @@ package com.interactive.appgames.domain.usecase
 import com.interactive.appgames.common.Result
 import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.domain.repository.GameRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
@@ -11,10 +10,10 @@ import javax.inject.Inject
  * Proyecto: appGames
  * Fecha de Creacion: 15/01/2025
  */
-class GetAllGamesUseCase @Inject constructor(
+class InsertGamesUseCase @Inject constructor(
     private val repository: GameRepository
 ) {
-    suspend operator fun invoke(): Result<List<Game>> {
-        return repository.getAllGames()
+    suspend operator fun invoke(games: List<Game>): Result<String> {
+        return repository.insertGames(games)
     }
 }

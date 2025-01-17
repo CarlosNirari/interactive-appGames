@@ -1,5 +1,7 @@
 package com.interactive.appgames.data.repository
 
+import android.database.SQLException
+import com.interactive.appgames.common.Constans
 import com.interactive.appgames.common.Result
 import com.interactive.appgames.data.api.ApiService
 import com.interactive.appgames.data.database.GameDao
@@ -7,8 +9,6 @@ import com.interactive.appgames.data.database.toEntity
 import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.domain.model.toDomain
 import com.interactive.appgames.domain.repository.GameRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
@@ -21,22 +21,45 @@ class GameRepositoryImpl @Inject constructor(
     private val gameDao: GameDao
 ) : GameRepository {
 
-    override suspend fun insertGames(games: List<Game>) {
-        gameDao.insertGames(games.map { it.toEntity() })
-    }
-
-    override suspend fun updateGame(game: Game) {
-        gameDao.updateGame(game.toEntity())
-    }
-
-    override suspend fun deleteGame(game: Game) {
-        gameDao.deleteGame(game.toEntity())
-    }
-
-    override suspend fun getAllGames(): Result<List<Game>> {
+    override suspend fun insertGames(games: List<Game>): Result<String> {
         return try {
-            //mapeo para conversion de Entidad DAO a Entidad de Dominio sin perder la implementacion de flow
-            Result.Success(gameDao.getAllGames().map { it.toDomain() })
+            gameDao.insertGames(games.map { it.toEntity() })
+            Result.Success(Constans.SUCCESSFUL_TRANSACCION)
+        } catch (e: SQLException) {
+            Result.Error(e)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override suspend fun insertGame(game: Game): Result<String> {
+        return try {
+            gameDao.insertGame(game.toEntity())
+            Result.Success(Constans.SUCCESSFUL_TRANSACCION)
+        } catch (e: SQLException) {
+            Result.Error(e)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override suspend fun updateGame(game: Game): Result<String> {
+        return try {
+            gameDao.updateGame(game.toEntity())
+            Result.Success(Constans.SUCCESSFUL_TRANSACCION)
+        } catch (e: SQLException) {
+            Result.Error(e)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override suspend fun deleteGame(game: Game): Result<String> {
+        return try {
+            gameDao.deleteGame(game.toEntity())
+            Result.Success(Constans.SUCCESSFUL_TRANSACCION)
+        } catch (e: SQLException) {
+            Result.Error(e)
         } catch (e: Exception) {
             Result.Error(e)
         }
@@ -46,6 +69,8 @@ class GameRepositoryImpl @Inject constructor(
         return try {
             //mapeo para conversion de Entidad DAO a Entidad de Dominio sin perder la implementacion de flow
             Result.Success(gameDao.getGamesByRanges(idLast).map { it.toDomain() })
+        } catch (e: SQLException) {
+            Result.Error(e)
         } catch (e: Exception) {
             Result.Error(e)
         }
@@ -57,6 +82,8 @@ class GameRepositoryImpl @Inject constructor(
             Result.Success(gameDao.getGamesByFilter(query).map {
                 it.toDomain()
             })
+        } catch (e: SQLException) {
+            Result.Error(e)
         } catch (e: Exception) {
             Result.Error(e)
         }
@@ -81,6 +108,8 @@ class GameRepositoryImpl @Inject constructor(
                     freetogame_profile_url = game.freetogame_profile_url
                 )
             )
+        } catch (e: SQLException) {
+            Result.Error(e)
         } catch (e: Exception) {
             Result.Error(e)
         }

@@ -1,5 +1,6 @@
 package com.interactive.appgames.domain.usecase
 
+import com.interactive.appgames.common.Result
 import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.domain.repository.GameRepository
 import javax.inject.Inject
@@ -12,7 +13,7 @@ import javax.inject.Inject
 class DeleteGameUseCase @Inject constructor(
     private val repository: GameRepository
 ) {
-    suspend operator fun invoke(game: Game) {
-        repository.deleteGame(game)
+    suspend operator fun invoke(game: Game): Result<String> {
+        return repository.deleteGame(game)
     }
 }

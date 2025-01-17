@@ -2,7 +2,6 @@ package com.interactive.appgames.domain.usecase
 
 import com.interactive.appgames.common.Constans
 import com.interactive.appgames.common.Result
-import com.interactive.appgames.data.api.ApiService
 import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.domain.repository.GameRepository
 import javax.inject.Inject
@@ -17,16 +16,25 @@ class GetAllGamesApiUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<List<Game>> {
         return try {
-            val result = repository.getAllGameApi()
-            when (result) {
+            val apiResult = repository.getAllGameApi()
+            when (apiResult) {
                 is Result.Success -> {
-                    if (result.data.isNotEmpty()) {
-                        repository.insertGames(result.data)
+                    if (apiResult.data.isNotEmpty()) {
+                        val dbInsertResult = repository.insertGames(apiResult.data)
+                        if (dbInsertResult is Result.Error) {
+                            Result.Error(dbInsertResult.exception)
+                        }
                     }
-                    repository.getGamesByRanges(Constans.INT_DEFAULT)
+
+                    val dbResult = repository.getGamesByRanges(Constans.INT_DEFAULT)
+                    when (dbResult) {
+                        is Result.Success -> dbResult
+                        is Result.Error -> Result.Error(dbResult.exception)
+                    }
                 }
+
                 is Result.Error -> {
-                    Result.Error(result.exception)
+                    Result.Error(apiResult.exception)
                 }
             }
         } catch (e: Exception) {

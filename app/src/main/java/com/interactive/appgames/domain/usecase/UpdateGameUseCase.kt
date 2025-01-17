@@ -1,5 +1,6 @@
 package com.interactive.appgames.domain.usecase
 
+import com.interactive.appgames.common.Result
 import com.interactive.appgames.data.api.ApiService
 import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.domain.repository.GameRepository
@@ -13,7 +14,7 @@ import javax.inject.Inject
 class UpdateGameUseCase @Inject constructor(
     private val repository: GameRepository
 ) {
-    suspend operator fun invoke(game: Game) {
-        repository.updateGame(game)
+    suspend operator fun invoke(game: Game): Result<String> {
+        return repository.updateGame(game)
     }
 }

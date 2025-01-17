@@ -18,14 +18,14 @@ interface GameDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGames(gameEntity: List<GameEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGame(gameEntity: GameEntity)
+
     @Update
     suspend fun updateGame(gameEntity: GameEntity)
 
     @Delete
     suspend fun deleteGame(gameEntity: GameEntity)
-
-    @Query("SELECT * FROM game_table ORDER BY id DESC")
-    suspend fun getAllGames(): List<GameEntity>
 
     @Query("SELECT * FROM game_table WHERE id>:idLast ORDER BY id ASC  LIMIT 10 ")
     suspend fun getGamesByRanges(idLast: Int): List<GameEntity>

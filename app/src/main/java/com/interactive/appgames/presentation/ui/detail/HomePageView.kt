@@ -47,6 +47,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,9 +58,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.interactive.appgames.R
 import com.interactive.appgames.common.Constans
-import com.interactive.appgames.common.Constans.Companion.reachedBottom
 import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.presentation.ui.common.DefaultScreenView
+import com.interactive.appgames.presentation.ui.common.SnackBar
+import com.interactive.appgames.presentation.ui.common.reachedBottom
 import com.interactive.appgames.presentation.ui.home.MainViewModel
 import kotlinx.coroutines.delay
 
@@ -94,6 +96,7 @@ fun HomePageView(
 
     val lazyState = rememberLazyListState()
     val reachedBottom by remember { derivedStateOf { lazyState.reachedBottom() } }
+    val scope = rememberCoroutineScope()
 
     if (!hasLoadedGames.value) {
         LaunchedEffect(Unit) {
@@ -197,9 +200,17 @@ fun HomePageView(
                 ) { item ->
                     SwipeToDeleteContainer(
                         item = item,
+                        itemKey = item.id,
                         onDelete = {
                             //Delete
                             mainViewModel.delete(it)
+                            /*SnackBar(
+                                scope = scope,
+                                snackbarHostState = snackbarHostState,
+                                msg = "\"${it.id}\"",
+                                actionLabel = "Undo",
+                                onAction = { mainViewModel.undoDelete() }
+                            )*/
                         }
                     ) { item ->
                         DetailCardView(
@@ -282,11 +293,12 @@ fun HomePageView(
 @Composable
 fun <T> SwipeToDeleteContainer(
     item: T,
+    itemKey: Int,
     onDelete: (T) -> Unit,
     animationDuration: Int = 500,
     content: @Composable (T) -> Unit
 ) {
-    var isRemoved by remember {
+    var isRemoved by remember(itemKey) {
         mutableStateOf(false)
     }
     val state = rememberDismissState(

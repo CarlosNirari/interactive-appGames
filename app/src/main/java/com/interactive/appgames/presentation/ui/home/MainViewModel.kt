@@ -1,5 +1,6 @@
 package com.interactive.appgames.presentation.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.interactive.appgames.common.Constans
@@ -7,10 +8,10 @@ import com.interactive.appgames.common.Result
 import com.interactive.appgames.domain.model.Game
 import com.interactive.appgames.domain.usecase.DeleteGameUseCase
 import com.interactive.appgames.domain.usecase.GetAllGamesApiUseCase
-import com.interactive.appgames.domain.usecase.GetAllGamesUseCase
 import com.interactive.appgames.domain.usecase.GetGameByIdUseCase
 import com.interactive.appgames.domain.usecase.GetGamesByFilterUseCase
 import com.interactive.appgames.domain.usecase.GetGamesByRangeUseCase
+import com.interactive.appgames.domain.usecase.InsertGameUseCase
 import com.interactive.appgames.domain.usecase.UpdateGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,10 +29,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val getAllGamesApiUseCase: GetAllGamesApiUseCase,
-    private val getAllGamesUseCase: GetAllGamesUseCase,
     private val getGamesByRangeUseCase: GetGamesByRangeUseCase,
     private val getGamesByFilterUseCase: GetGamesByFilterUseCase,
     private val getGameByIdUseCase: GetGameByIdUseCase,
+    private val insertGameUseCase: InsertGameUseCase,
     private val updateGameUseCase: UpdateGameUseCase,
     private val deleteGameUseCase: DeleteGameUseCase
 
@@ -39,6 +40,8 @@ class MainViewModel @Inject constructor(
 
     //duplicidad de declaracion, permite exponer al ui solo la variable inmutable, conservando en el view model la muteable
     //asegunrando que los datos no sean manipulados por la ui
+
+    val TAG: String = MainViewModel::class.simpleName.toString()
 
     val _showLoader = MutableStateFlow(false)
     val showLoader: StateFlow<Boolean> = _showLoader
@@ -51,6 +54,8 @@ class MainViewModel @Inject constructor(
 
     private val _games = MutableStateFlow<List<Game>>(emptyList())
     val games: StateFlow<List<Game>> = _games
+
+    private var undoGame: Game? = null
 
     private val _game = MutableStateFlow<Game>(
         Game(
@@ -146,15 +151,55 @@ class MainViewModel @Inject constructor(
 
     fun updateGame(game: Game) {
         viewModelScope.launch(Dispatchers.IO) {
-            updateGameUseCase.invoke(game)
+            val result = updateGameUseCase.invoke(game)
+            when (result) {
+                is Result.Success -> {
+                    _games.value = _games.value.map {
+                        if (it.id == game.id) game else it
+                    }
+                }
+
+                is Result.Error -> {
+                    _error.value = result.exception.message
+                }
+            }
         }
     }
 
     fun delete(game: Game) {
         viewModelScope.launch(Dispatchers.IO) {
-            deleteGameUseCase.invoke(game)
-            val updateGames = _games.value.filter { it.id != game.id }
-            _games.value = updateGames
+            undoGame = game//respaldo
+            val result = deleteGameUseCase.invoke(game)
+            when (result) {
+                is Result.Success -> {
+                    val updateGames = _games.value.filter { it.id != game.id }
+                    _games.value = updateGames
+                }
+
+                is Result.Error -> {
+                    _error.value = result.exception.message
+                }
+            }
+        }
+    }
+
+
+    fun undoDelete() {
+        viewModelScope.launch(Dispatchers.IO) {
+            //recuperamos el respaldo
+            undoGame?.let { item ->
+
+                insertGameUseCase.invoke(item)//insert db
+
+                val insertIndex = _games.value.indexOfFirst { it.id > item.id }
+                if (insertIndex == -1) {
+                    _games.value = _games.value + item
+                } else {
+                    _games.value = _games.value.toMutableList().apply {
+                        add(insertIndex, item)
+                    }
+                }
+            }
         }
     }
 
