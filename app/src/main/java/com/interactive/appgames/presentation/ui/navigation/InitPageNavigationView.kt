@@ -39,6 +39,7 @@ fun InitPageView(mainViewModel: MainViewModel) {
                 }
                 composable(tabBarItem[1].title) {
                     //Logica para pantalla de favoritos
+                    //ManualView()
                 }
             }
         }

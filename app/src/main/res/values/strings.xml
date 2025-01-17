@@ -20,5 +20,4 @@
     <string name="menssage_empty_result">No results found</string>
     <string name="menssage_reintent_connect">Try another search or check your connection.</string>
     <string name="menssage_ok">The information has been updated correctly.</string>
-
 </resources>
