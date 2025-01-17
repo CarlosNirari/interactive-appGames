@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.interactive.appgames.presentation.ui.home.MainViewModel
 import com.interactive.appgames.presentation.ui.common.GetTabsView
+import com.interactive.appgames.presentation.ui.detail.ManualView
 import com.interactive.appgames.presentation.ui.tabs.TabView
 
 /**
@@ -39,7 +40,7 @@ fun InitPageView(mainViewModel: MainViewModel) {
                 }
                 composable(tabBarItem[1].title) {
                     //Logica para pantalla de favoritos
-                    //ManualView()
+                    ManualView()
                 }
             }
         }

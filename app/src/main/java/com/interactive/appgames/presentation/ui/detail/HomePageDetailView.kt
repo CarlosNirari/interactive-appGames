@@ -99,7 +99,7 @@ fun HomePageDetailView(
         ) {
 
             TopAppBar(
-                title = { Text(if (isPreview) "Game Details" else game.title) },
+                title = { Text(if (isPreview) "Eternal Fury" else game.title) },
                 backgroundColor = MaterialTheme.colors.primary,
                 contentColor = MaterialTheme.colors.onPrimary,
                 navigationIcon = {

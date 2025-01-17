@@ -15,8 +15,8 @@ android {
         applicationId = "com.interactive.appgames"
         minSdk = 29
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.5.1"
+        versionCode = 6
+        versionName = "2.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
