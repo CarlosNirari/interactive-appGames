@@ -1,5 +1,6 @@
 package com.interactive.appgames.presentation.ui.common
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.interactive.appgames.MainApplication.Companion.CONTEXT
 import com.interactive.appgames.R
 import com.interactive.appgames.domain.model.Game
 
@@ -215,21 +217,40 @@ fun PopUpUpdate(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     TextButton(onClick = {
-                        val updateGame = Game(
-                            id = game.id,
-                            title = title,
-                            thumbnail = game.thumbnail,
-                            short_description = shortDescription,
-                            game_url = gameUrl,
-                            genre = genre,
-                            platform = platform,
-                            publisher = publisher,
-                            developer = developer,
-                            release_date = game.release_date,
-                            freetogame_profile_url = freetogameProfileUrl
-                        )
-                        onSave(updateGame)
-                        onDismiss()
+
+                        if (title.isNotEmpty() &&
+                            shortDescription.isNotEmpty() &&
+                            gameUrl.isNotEmpty() &&
+                            genre.isNotEmpty() &&
+                            platform.isNotEmpty() &&
+                            publisher.isNotEmpty() &&
+                            developer.isNotEmpty() &&
+                            freetogameProfileUrl.isNotEmpty()
+                        ) {
+
+                            val updateGame = Game(
+                                id = game.id,
+                                title = title,
+                                thumbnail = game.thumbnail,
+                                short_description = shortDescription,
+                                game_url = gameUrl,
+                                genre = genre,
+                                platform = platform,
+                                publisher = publisher,
+                                developer = developer,
+                                release_date = game.release_date,
+                                freetogame_profile_url = freetogameProfileUrl
+                            )
+                            onSave(updateGame)
+                            onDismiss()
+                        } else {
+                            Toast.makeText(
+                                CONTEXT,
+                                "Capture all fields to continue"
+                                /*stringResource(R.string.error_empty_form)*/,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }) {
                         Text(
                             text = stringResource(id = R.string.save),

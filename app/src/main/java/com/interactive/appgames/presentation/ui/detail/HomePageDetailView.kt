@@ -310,12 +310,16 @@ fun HomePageDetailView(
 
                                 Button(
                                     onClick = {
-                                        val intent = Intent(
-                                            Intent.ACTION_VIEW,
-                                            Uri.parse(if (isPreview) "https://www.freetogame.com/pso2-new-genesis" else game.freetogame_profile_url)
-                                        )
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        CONTEXT?.startActivity(intent)
+                                        try {
+                                            val intent = Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse(if (isPreview) "https://www.freetogame.com/pso2-new-genesis" else game.freetogame_profile_url)
+                                            )
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            CONTEXT?.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Color(
@@ -332,12 +336,16 @@ fun HomePageDetailView(
 
                                 Button(
                                     onClick = {
-                                        val intent = Intent(
-                                            Intent.ACTION_VIEW,
-                                            Uri.parse(if (isPreview) "https://www.freetogame.com/open/pso2-new-genesis" else game.game_url)
-                                        )
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        CONTEXT?.startActivity(intent)
+                                        try {
+                                            val intent = Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse(if (isPreview) "https://www.freetogame.com/open/pso2-new-genesis" else game.game_url)
+                                            )
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            CONTEXT?.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Color(
